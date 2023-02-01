@@ -22,11 +22,17 @@ public class EmployeeService {
 
     private final WebClient webClient;
 
-    public EmployeeService(EmployeeRepository employeeRepository, RestTemplate restTemplate, WebClient webClient) {
+    private APIClient apiClient;
+
+    public EmployeeService(EmployeeRepository employeeRepository,
+                           RestTemplate restTemplate,
+                           WebClient webClient,
+                           APIClient apiClient) {
         this.employeeRepository = employeeRepository;
         this.modelMapper = new ModelMapper();
         this.restTemplate = restTemplate;
         this.webClient = webClient;
+        this.apiClient = apiClient;
     }
 
     public EmployeeDTO createEmployee(EmployeeDTO employeeDTO) {
@@ -40,13 +46,17 @@ public class EmployeeService {
 
 //        ResponseEntity<DepartmentDTO> responseEntity =  this.restTemplate.getForEntity("http://localhost:8080/api/department/" + employee.getDepartmentCode()
 //                , DepartmentDTO.class);
-        DepartmentDTO departmentDTO = this.webClient.get()
-                .uri("http://localhost:8080/api/department/" + employee.getDepartmentCode())
-                .retrieve()
-                .bodyToMono(DepartmentDTO.class)
-                .block();
-
 //        DepartmentDTO departmentDTO = responseEntity.getBody();
+
+
+//        DepartmentDTO departmentDTO = this.webClient.get()
+//                .uri("http://localhost:8080/api/department/" + employee.getDepartmentCode())
+//                .retrieve()
+//                .bodyToMono(DepartmentDTO.class)
+//                .block();
+
+        DepartmentDTO departmentDTO = this.apiClient.getDepartmentByCode(employee.getDepartmentCode());
+
         EmployeeDTO employeeDTO = this.modelMapper.map(employee, EmployeeDTO.class);
 
         APIResponseDTO apiResponseDTO = new APIResponseDTO(employeeDTO, departmentDTO);
